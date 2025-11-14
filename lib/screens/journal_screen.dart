@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../models/journal_entry.dart';
 import '../providers/account_provider.dart';
+import '../widgets/app_drawer.dart';
 
 class JournalScreen extends StatelessWidget {
   const JournalScreen({super.key});
@@ -11,6 +12,7 @@ class JournalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const AppDrawer(),
       appBar: AppBar(title: const Text('قيد اليومية')),
       body: FutureBuilder<List<JournalEntry>>(
         future: context.read<AccountProvider>().journalEntries(),
