@@ -4,9 +4,11 @@ import 'package:provider/provider.dart';
 
 import 'providers/account_provider.dart';
 import 'providers/activation_provider.dart';
+import 'providers/security_provider.dart';
 import 'screens/accounts_screen.dart';
 import 'screens/activation_screen.dart';
 import 'screens/journal_screen.dart';
+import 'screens/pin_code_entry_screen.dart';
 import 'services/activation_service.dart';
 import 'services/database_service.dart';
 
@@ -32,6 +34,7 @@ class AlRawayApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AccountProvider(databaseService)..loadAccounts()),
         ChangeNotifierProvider(create: (_) => ActivationProvider(activationService)..load()),
+        ChangeNotifierProvider(create: (_) => SecurityProvider()..load()),
       ],
       child: MaterialApp(
         title: 'الرعوي',
@@ -62,6 +65,7 @@ class HomeShell extends StatefulWidget {
 
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
+  bool _pinPromptShown = false;
 
   final _screens = const [
     AccountsScreen(),
@@ -71,17 +75,37 @@ class _HomeShellState extends State<HomeShell> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _screens[_index],
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _index,
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.people_alt), label: 'الحسابات'),
-          NavigationDestination(icon: Icon(Icons.book), label: 'قيد اليومية'),
-          NavigationDestination(icon: Icon(Icons.lock), label: 'التفعيل'),
-        ],
-        onDestinationSelected: (value) => setState(() => _index = value),
-      ),
+    return Consumer<SecurityProvider>(
+      builder: (context, security, _) {
+        if (security.isLoaded && security.needsPinEntry && !_pinPromptShown) {
+          _pinPromptShown = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const PinCodeEntryScreen(requireUnlock: true),
+                fullscreenDialog: true,
+              ),
+            );
+            if (mounted) {
+              setState(() {
+                _pinPromptShown = false;
+              });
+            }
+          });
+        }
+        return Scaffold(
+          body: _screens[_index],
+          bottomNavigationBar: NavigationBar(
+            selectedIndex: _index,
+            destinations: const [
+              NavigationDestination(icon: Icon(Icons.people_alt), label: 'الحسابات'),
+              NavigationDestination(icon: Icon(Icons.book), label: 'قيد اليومية'),
+              NavigationDestination(icon: Icon(Icons.lock), label: 'التفعيل'),
+            ],
+            onDestinationSelected: (value) => setState(() => _index = value),
+          ),
+        );
+      },
     );
   }
 }

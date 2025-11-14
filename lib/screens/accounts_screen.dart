@@ -6,6 +6,7 @@ import '../providers/account_provider.dart';
 import '../providers/activation_provider.dart';
 import '../ui/forms.dart';
 import '../widgets/account_card.dart';
+import '../widgets/app_drawer.dart';
 import 'daily_sales_screen.dart';
 
 class AccountsScreen extends StatelessWidget {
@@ -16,6 +17,7 @@ class AccountsScreen extends StatelessWidget {
     return Consumer2<AccountProvider, ActivationProvider>(
       builder: (context, accounts, activation, _) {
         return Scaffold(
+          drawer: const AppDrawer(),
           appBar: AppBar(
             title: const Text('حسابات الرعوي'),
             bottom: PreferredSize(

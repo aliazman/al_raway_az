@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/activation_provider.dart';
+import '../widgets/app_drawer.dart';
 
 class ActivationScreen extends StatefulWidget {
   const ActivationScreen({super.key});
@@ -25,6 +26,7 @@ class _ActivationScreenState extends State<ActivationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const AppDrawer(),
       appBar: AppBar(title: const Text('تفعيل النظام')),
       body: Consumer<ActivationProvider>(
         builder: (context, provider, _) {
